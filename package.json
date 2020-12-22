@@ -1,0 +1,8 @@
+{
+  "name": "@sdescarries/openvpn-pia",
+  "version": "0.0.0",
+  "description": "OpenVPN Client for Private Internet Access with Port Forwarding",
+  "repository": "git@github.com:sdescarries/openvpn-pia.git",
+  "author": "Simon",
+  "license": "UNLICENSED"
+}
