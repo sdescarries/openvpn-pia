@@ -1,0 +1,24 @@
+FROM alpine
+
+ARG TZ
+
+WORKDIR "/vpn"
+
+ENV \
+  HOME="/vpn" \
+  PS1="transmission \w> "
+
+RUN apk --no-cache --no-progress add \
+  bash \
+  curl \
+  transmission-daemon \
+  tzdata
+
+EXPOSE 9091
+
+COPY entrypoint.sh /
+
+ENV \
+  TZ=${TZ:-America/Montreal}
+
+ENTRYPOINT ["/entrypoint.sh"]

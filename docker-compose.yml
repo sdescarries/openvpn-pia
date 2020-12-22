@@ -1,0 +1,73 @@
+version: '3.4'
+
+networks:
+  default:
+
+volumes:
+  pia:
+  trans:
+
+services:
+  pia:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        TZ: ${TZ:-America/Montreal}
+        PIA_SERVER: ${PIA_SERVER:-CA}
+
+    image: sdescarries/openvpn-pia
+    container_name: ${NAME-pia}
+
+    # cap_add, security_opt, and volume required for the image to function
+    cap_add:
+      - net_admin
+
+    environment:
+      TZ: ${TZ:-America/Montreal}
+      PIA_SERVER: ${PIA_SERVER:-CA}
+
+    networks:
+      - default
+
+    tmpfs:
+      - /run
+      - /tmp
+
+    restart: unless-stopped
+    security_opt:
+      - label:disable
+
+    ports:
+        - '9091:9091'
+
+    tty: true
+    volumes:
+      - type: bind
+        source: /dev/net
+        target: /dev/net
+
+      - type: bind
+        read_only: true
+        source: ./credentials.txt
+        target: /vpn/credentials.txt
+
+      - type: volume
+        source: pia
+        target: /vpn/info
+
+      - type: bind
+        source: ${DATA-./data}/incomplete
+        target: /data/incomplete
+
+      - type: bind
+        source: ${DATA-./data}/completed
+        target: /data/completed
+
+      - type: bind
+        source: ${DATA-./data}/watch
+        target: /data/watch
+
+      - type: volume
+        source: trans
+        target: /trans

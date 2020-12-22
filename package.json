@@ -4,5 +4,21 @@
   "description": "OpenVPN Client for Private Internet Access with Port Forwarding",
   "repository": "git@github.com:sdescarries/openvpn-pia.git",
   "author": "Simon",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "ts-node ./pia.ts",
+    "build": "webpack"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.14",
+    "chalk": "^4.1.0",
+    "jest": "^26.6.3",
+    "p-limit": "^3.1.0",
+    "ts-jest": "^26.4.4",
+    "ts-loader": "^8.0.12",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.3",
+    "webpack": "^5.11.0",
+    "webpack-cli": "^4.2.0"
+  }
 }
