@@ -16,7 +16,7 @@ services:
         TZ: ${TZ:-America/Montreal}
         PIA_SERVER: ${PIA_SERVER:-CA}
 
-    image: sdescarries/openvpn-pia
+    image: ghcr.io/sdescarries/openvpn-pia
     container_name: ${NAME-pia}
 
     # cap_add, security_opt, and volume required for the image to function

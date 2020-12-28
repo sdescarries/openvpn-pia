@@ -1,5 +1,7 @@
 FROM node:alpine AS build
 
+LABEL org.opencontainers.image.source https://github.com/sdescarries/openvpn-pia
+
 COPY . /build
 
 WORKDIR /build
