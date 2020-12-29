@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from 'fs';
+import { writeFileSync } from 'fs';
 import { exec, ExecPromise } from './exec';
 
 const transConfig = (config: any) => ({
@@ -49,7 +49,7 @@ const transConfig = (config: any) => ({
     'rpc-host-whitelist': '',
     'rpc-host-whitelist-enabled': false,
     'rpc-password': '{116e9c74031a3f24159ec800cab71eaa11ebc6bbmjU.jkgT',
-    'rpc-port': 9091,
+    'rpc-port': parseInt(process.env['RPC_PORT'] ?? '9091', 10),
     'rpc-url': '/transmission/',
     'rpc-username': 'username',
     'rpc-whitelist': '127.0.0.1,::1',

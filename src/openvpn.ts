@@ -42,11 +42,14 @@ function launch({ cn, ip }: OpenVPN): [Promise<void>, ExecPromise] {
     '--ca', "/vpn/ca.rsa.2048.crt",
     '--cipher', 'aes-128-cbc',
     '--client',
+    '--comp-lzo', 'no',
     '--crl-verify', '/vpn/crl.rsa.2048.pem',
     '--dev', 'pia',
     '--dev-type', 'tun',
     '--disable-occ',
     '--proto', 'udp',
+    '--pull-filter', 'ignore', 'ifconfig-ipv6',
+    '--pull-filter', 'ignore', 'route-ipv6',
     '--remote', ip, '1198',
     '--remote-cert-tls', 'server',
     '--reneg-sec', '0',
@@ -62,6 +65,8 @@ function launch({ cn, ip }: OpenVPN): [Promise<void>, ExecPromise] {
     onStdout: openvpnLogger(context, chalk.blue),
     onStderr: openvpnLogger(context, chalk.yellow),
   });
+
+  setTimeout(context.resolve, 60000);
 
   return [
     context.ready,

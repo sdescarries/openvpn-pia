@@ -26,6 +26,7 @@ services:
     environment:
       TZ: ${TZ:-America/Montreal}
       PIA_SERVER: ${PIA_SERVER:-CA}
+      RPC_PORT: ${RPC_PORT:-9091}
 
     networks:
       - default
