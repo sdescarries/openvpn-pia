@@ -10,10 +10,19 @@ import {
   intoServerList,
 } from './filters';
 
-export const getServerList = (): Promise<ServerInfo> => 
-  exec(`curl -s ${serverListUrl}`)
+export const getServerList = (): Promise<ServerInfo> => {
+  const cmd = [
+    'curl', '-s',
+    serverListUrl,
+  ];
+  return exec(cmd)
     .then(text => text.split(/\n/g)[0])
-    .then(text => JSON.parse(text) as ServerInfo);
+    .then(text => JSON.parse(text) as ServerInfo)
+    .catch(error => {
+      console.error(`exec command failed: ${cmd.join(' ')}`);
+      throw error;
+    });
+}
 
 const httPingLimit = pLimit(10);
 export const httPing = (server: Server): Promise<Server> =>
@@ -26,9 +35,9 @@ export const httPing = (server: Server): Promise<Server> =>
     ], {
       expectedStatusCode: 52,
     }
-  )).then(res => parseFloat(res))
+  )).then(parseFloat)
     .catch(() => 9.999)
-    .then(ping => {
+    .then((ping: number) => {
       if (ping !== ping) {
         ping = 9.999;
       }
@@ -61,27 +70,36 @@ export const localIp = (dev: string = 'pia'): Promise<string> =>
   exec('ip a')
     .then((res: string) => res?.match(new RegExp(` *inet ([0-9.]+).*${dev}`, 'i'))?.[1] ?? '');
 
-export const publicIp = (): Promise<string> =>
-  exec([
+export const publicIp = (): Promise<string> => {
+  const cmd = [
     'curl', '-s',
     '--connect-timeout', '1',
     'https://api.ipify.org?format=json',
-  ]).then(res => JSON.parse(res))
-    .then(({ ip }) => ip);
+  ];
+  return exec(cmd).then(res => JSON.parse(res))
+    .then(({ ip }) => ip)
+    .catch(error => {
+      console.error(`exec command failed: ${cmd.join(' ')}`);
+      throw error;
+    });
+}
 
 export const generateToken = (
-  { cn, meta }: Server,
   { username, password }: Credentials
-): Promise<string> =>
-  exec([
+): Promise<string> => {
+  const cmd = [
     'curl', '-s',
     '-u', `${username}:${password}`,
-    '--cacert', "/vpn/ca.rsa.4096.crt",
-    '--connect-timeout', '2',
-    '--connect-to', `${cn}::${meta}:`,
-    `https://${cn}/authv3/generateToken`,
-  ]).then(res => JSON.parse(res))
-    .then(({ token }) => token);
+    `https://privateinternetaccess.com/gtoken/generateToken`,
+  ];
+
+  return exec(cmd).then(res => JSON.parse(res))
+    .then(({ token }) => token)
+    .catch(error => {
+      console.error(`exec command failed: ${cmd.join(' ')}`);
+      throw error;
+    });
+}
 
 export interface GetSignature {
   cn: string;
@@ -103,8 +121,8 @@ export const getSignature = ({
   cn,
   gw,
   token,
-}: GetSignature):
-  Promise<Signature> => exec([
+}: GetSignature): Promise<Signature> => {
+  const cmd = [
     'curl',
     '-s',
     '--cacert', "/vpn/ca.rsa.4096.crt",
@@ -112,13 +130,19 @@ export const getSignature = ({
     '--connect-to', `${cn}::${gw}:`,
     '-G', '--data-urlencode', `token=${token}`, 
     `https://${cn}:19999/getSignature`,
-  ]).then(res => JSON.parse(res))
+  ];
+
+  return exec(cmd).then(res => JSON.parse(res))
     .then(({ payload, signature }) => ({
       decoded: JSON.parse(Buffer.from(payload, 'base64').toString()),
       payload,
       signature,
-    }));
-
+      }))
+    .catch(error => {
+      console.error(`exec command failed: ${cmd.join(' ')}`);
+      throw error;
+    });
+  }
 export interface BindPort {
   cn: string;
   gw: string;
@@ -136,9 +160,8 @@ export const bindPort = ({
   gw,
   payload,
   signature,
-}: BindPort):
-  Promise<BindPortResult> =>
-  exec([
+}: BindPort): Promise<BindPortResult> => {
+  const cmd = [
     'curl', '-s',
     '--cacert', "/vpn/ca.rsa.4096.crt",
     '--connect-timeout', '2',
@@ -147,6 +170,11 @@ export const bindPort = ({
     '--data-urlencode', `payload=${payload}`, 
     '--data-urlencode', `signature=${signature}`, 
     `https://${cn}:19999/bindPort`,
-  ]).then(res => JSON.parse(res))
-    .then(({ status, message }) => ({ status, message }));
-
+  ];
+  return exec(cmd).then(res => JSON.parse(res))
+    .then(({ status, message }) => ({ status, message }))
+    .catch(error => {
+      console.error(`exec command failed: ${cmd.join(' ')}`);
+      throw error;
+    });
+}

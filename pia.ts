@@ -64,7 +64,7 @@ export async function pia() {
 
   if (config.token == null) {
     const credentials = getCredentials();
-    const token = await generateToken(config as Server, credentials);
+    const token = await generateToken(credentials);
     updateConfig({ token });
   }
 
