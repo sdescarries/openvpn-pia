@@ -22,7 +22,7 @@ export const openvpnLogger = (context: any, color: Function) => {
       doPop();
       const output = buffer.join('');
       console.log(color(`\t${output}`));
-      if (/Initialization Sequence Completed/i.test(output)) {
+      if (/ip addr add dev pia/i.test(output)) {
         context.resolve();
       }
       buffer.splice(0, buffer.length);
