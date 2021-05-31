@@ -62,14 +62,12 @@ export async function pia() {
     updateConfig(server);
   }
 
-  if (config.token == null) {
-    const credentials = getCredentials();
-    const token = await generateToken(credentials);
-    updateConfig({ token });
-  }
-
   const [ready, process] = openvpn(config as OpenVPN);
   await ready;
+
+  const credentials = getCredentials();
+  const token = await generateToken(credentials);
+  updateConfig({ token });
 
   if (process?.cp?.pid) {
     updateConfig({ pid: process?.cp?.pid });
