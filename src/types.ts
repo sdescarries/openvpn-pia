@@ -7,8 +7,8 @@ export interface Server {
 
 export interface ServerRegion {
   id: string,
-  name: string, 
-  country: string, 
+  name: string,
+  country: string,
   dns: string;
   port_forward: boolean;
   geo: boolean;

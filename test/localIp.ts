@@ -1,10 +1,10 @@
 import {
-  localIp,
-  route,
   gateway,
+  localIp,
   logAddress,
   publicIp,
-} from '../src';
+  route,
+} from '../src/index.js';
 
 publicIp().then(r => logAddress('WAN IP', r));
 localIp(process.argv[2]).then(r => logAddress('LAN IP', r));

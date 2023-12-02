@@ -11,7 +11,6 @@ password
 > chmod og-rwx credentials.txt
 ```
 
-
 Create a directory structure for torrent files
 
 ```sh

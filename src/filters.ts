@@ -1,4 +1,4 @@
-import { Server, ServerRegion } from './types';
+import { Server, ServerRegion } from './types.js';
 
 const piaServer = process.env['PIA_SERVER'];
 export const byPiaServer =

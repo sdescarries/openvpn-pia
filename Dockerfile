@@ -7,10 +7,10 @@ COPY . /build
 WORKDIR /build
 
 RUN true \
-  && yarn \
-  && yarn build
+  && npm install \
+  && npm run build
 
-FROM centos:centos8
+FROM fedora:latest
 
 ARG TZ
 ARG PIA_SERVER
@@ -25,22 +25,16 @@ ENV \
 
 RUN true \
   && groupadd -r vpn \
-  && dnf install -y epel-release \
-  && dnf install -y curl iptables openvpn transmission-daemon tzdata unzip \
+  && dnf install -y curl iproute iptables openvpn transmission-daemon tzdata unzip \
   && dnf clean all \
   && rm -rf /tmp/*
 
 RUN true \
-  && curl -sL https://rpm.nodesource.com/setup_14.x | bash - \
-  && curl https://bintray.com/ookla/rhel/rpm | tee /etc/yum.repos.d/ookla.repo \
-  && curl -sL https://dl.yarnpkg.com/rpm/yarn.repo | tee /etc/yum.repos.d/yarn.repo \
-  && dnf install -y nodejs yarn speedtest \
+  && dnf install -y https://rpm.nodesource.com/pub_20.x/nodistro/repo/nodesource-release-nodistro-1.noarch.rpm \
+  && curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.rpm.sh | bash \
+  && dnf install -y nodejs speedtest \
   && dnf clean all \
   && rm -rf /tmp/*
-
-RUN true \
-  && curl -fsSL "https://deno.land/x/install/install.sh" | sh \
-  && rm -f "${DENO_INSTALL}/bin/deno.zip"
 
 ENV \
   TZ=${TZ:-America/Montreal} \

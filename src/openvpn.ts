@@ -1,6 +1,7 @@
+import { ExecPromise, exec } from './exec.js';
+
+import { Server } from './types.js';
 import chalk from 'chalk';
-import { exec, ExecPromise } from './exec';
-import { Server } from './types';
 
 export interface OpenVPN extends Server {
   pid: string;

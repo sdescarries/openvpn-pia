@@ -1,14 +1,15 @@
-import chalk from 'chalk';
-import pLimit from 'p-limit';
-import { Credentials } from './credentials';
-import { Server, ServerInfo } from './types';
-import { exec } from './exec';
-import { serverListUrl } from './constants';
+import { Server, ServerInfo } from './types.js';
 import {
   byPiaServer,
   byPing,
   intoServerList,
-} from './filters';
+} from './filters.js';
+
+import { Credentials } from './credentials.js';
+import chalk from 'chalk';
+import { exec } from './exec.js';
+import pLimit from 'p-limit';
+import { serverListUrl } from './constants.js';
 
 export const getServerList = (): Promise<ServerInfo> => {
   const cmd = [
@@ -26,7 +27,7 @@ export const getServerList = (): Promise<ServerInfo> => {
 
 const httPingLimit = pLimit(10);
 export const httPing = (server: Server): Promise<Server> =>
-  httPingLimit(() => 
+  httPingLimit(() =>
     exec([
       'curl', '-s',
       '--connect-timeout', '1',
@@ -128,7 +129,7 @@ export const getSignature = ({
     '--cacert', "/vpn/ca.rsa.4096.crt",
     '--connect-timeout', '2',
     '--connect-to', `${cn}::${gw}:`,
-    '-G', '--data-urlencode', `token=${token}`, 
+    '-G', '--data-urlencode', `token=${token}`,
     `https://${cn}:19999/getSignature`,
   ];
 
@@ -167,8 +168,8 @@ export const bindPort = ({
     '--connect-timeout', '2',
     '--connect-to', `${cn}::${gw}:`,
     '-G',
-    '--data-urlencode', `payload=${payload}`, 
-    '--data-urlencode', `signature=${signature}`, 
+    '--data-urlencode', `payload=${payload}`,
+    '--data-urlencode', `signature=${signature}`,
     `https://${cn}:19999/bindPort`,
   ];
   return exec(cmd).then(res => JSON.parse(res))

@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import {
   BindPort,
   GetSignature,
@@ -15,9 +14,11 @@ import {
   logAddress,
   openvpn,
   publicIp,
-  updateConfig,
   transmission,
-} from './src';
+  updateConfig,
+} from './src/index.js';
+
+import chalk from 'chalk';
 
 const banner: string = `
                                                                     
@@ -46,7 +47,7 @@ export async function pia() {
     if (config.pub == null || config.pub !== pub) {
       updateConfig({
         pub,
-  
+
         // Reset everything else
         cn: null,
         payload: null,
@@ -103,13 +104,13 @@ export async function pia() {
         }
       })
       .catch(console.log)
-    
+
     interval.handle = setInterval(bindJob, 300000);
     bindJob();
   }
 
   const trans = transmission(config);
-  const transPid: string = trans?.cp?.pid.toString(10) ?? 'N/A';
+  const transPid: string = trans?.cp?.pid?.toString(10) ?? 'N/A';
 
   console.log('');
   logAddress('PIA Gateway', config.gw);

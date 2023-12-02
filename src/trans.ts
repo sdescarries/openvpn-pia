@@ -1,5 +1,6 @@
+import { ExecPromise, exec } from './exec.js';
+
 import { writeFileSync } from 'fs';
-import { exec, ExecPromise } from './exec';
 
 const transConfig = (config: any) => ({
     'alt-speed-down': 50,
