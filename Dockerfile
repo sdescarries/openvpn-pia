@@ -30,8 +30,8 @@ RUN true \
   && rm -rf /tmp/*
 
 RUN true \
-  && dnf install -y https://rpm.nodesource.com/pub_20.x/nodistro/repo/nodesource-release-nodistro-1.noarch.rpm \
-  && curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.rpm.sh | bash \
+  && curl -fsSL https://rpm.nodesource.com/setup_22.x | bash \
+  && curl -fsSL https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.rpm.sh | bash \
   && dnf install -y nodejs speedtest \
   && dnf clean all \
   && rm -rf /tmp/*

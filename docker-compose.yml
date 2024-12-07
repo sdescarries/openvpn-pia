@@ -1,11 +1,11 @@
-version: '3.4'
-
 networks:
   default:
+
 
 volumes:
   pia:
   trans:
+
 
 services:
   pia:
@@ -40,7 +40,7 @@ services:
       - label:disable
 
     ports:
-        - '9091:9091'
+      - '9091:9091'
 
     tty: true
     volumes:

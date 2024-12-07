@@ -41,7 +41,6 @@ function launch({ cn, ip }: OpenVPN): [Promise<void>, ExecPromise] {
     '--auth-nocache',
     '--auth-user-pass', "/vpn/credentials.txt",
     '--ca', "/vpn/ca.rsa.2048.crt",
-    '--cipher', 'aes-128-cbc',
     '--client',
     '--comp-lzo', 'no',
     '--crl-verify', '/vpn/crl.rsa.2048.pem',
