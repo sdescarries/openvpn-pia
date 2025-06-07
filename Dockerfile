@@ -31,8 +31,7 @@ RUN true \
 
 RUN true \
   && curl -fsSL https://rpm.nodesource.com/setup_22.x | bash \
-  && curl -fsSL https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.rpm.sh | bash \
-  && dnf install -y nodejs speedtest \
+  && dnf install -y nodejs \
   && dnf clean all \
   && rm -rf /tmp/*
 

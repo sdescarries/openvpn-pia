@@ -10,9 +10,9 @@
     "build": "esbuild pia.ts --bundle --platform=node --outfile=vpn/pia.js"
   },
   "devDependencies": {
-    "@types/node": "^20.10.2",
+    "@types/node": "^22.15.30",
     "chalk": "^5.3.0",
-    "esbuild": "^0.19.8",
-    "p-limit": "^5.0.0"
+    "esbuild": "^0.25.5",
+    "p-limit": "^6.2.0"
   }
 }
