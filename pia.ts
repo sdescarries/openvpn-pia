@@ -19,59 +19,32 @@ import {
 } from './src/index.js';
 
 import chalk from 'chalk';
+import fs from 'fs';
 
-const banner: string = `
-                                                                    
-                                                                    
-       ____                 _    ______  _   __   ____  _______     
-      / __ \\____  ___  ____| |  / / __ \\/ | / /  / __ \\/  _/   |    
-     / / / / __ \\/ _ \\/ __ \\ | / / /_/ /  |/ /  / /_/ // // /| |    
-    / /_/ / /_/ /  __/ / / / |/ / ____/ /|  /  / ____// // ___ |    
-    \\____/ .___/\\___/_/ /_/|___/_/   /_/ |_/  /_/   /___/_/  |_|    
-        /_/                                                         
-                                                                    
-                                                                    
-`;
+const banner: string = fs.readFileSync('/vpn/banner.txt');
 
 export async function pia() {
 
   console.log(chalk.bgGreenBright.whiteBright.bold(banner));
 
-  const pid = await exec('pgrep openvpn').catch(() => '');
-  const config = updateConfig({ pid });
+  const credentials = getCredentials();
+  const [pub, server, token] = await Promise.all([
+    publicIp(),
+    getFastestServer(),
+    generateToken(credentials),
+  ]);
 
-  if (!pid) {
-
-    const pub = await publicIp();
-
-    if (config.pub == null || config.pub !== pub) {
-      updateConfig({
-        pub,
-
-        // Reset everything else
-        cn: null,
-        payload: null,
-        port: null,
-        signature: null,
-        token: null,
-      });
-    }
-  }
-
-  if (config.cn == null) {
-    const server = await getFastestServer();
-    updateConfig(server);
-  }
+  const config = updateConfig({
+    ...server,
+    pub,
+    token,
+  });
 
   const [ready, process] = openvpn(config as OpenVPN);
   await ready;
 
-  const credentials = getCredentials();
-  const token = await generateToken(credentials);
-  updateConfig({ token });
-
-  if (process?.cp?.pid) {
-    updateConfig({ pid: process?.cp?.pid });
+  if (process?.cp?.pid != null) {
+    updateConfig({ pid: process.cp.pid });
   }
 
   {
@@ -103,7 +76,9 @@ export async function pia() {
           clearInterval(interval.handle);
         }
       })
-      .catch(console.log)
+      .catch((error) => {
+        console.log(error);
+      });
 
     interval.handle = setInterval(bindJob, 300000);
     bindJob();

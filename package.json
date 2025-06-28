@@ -7,12 +7,15 @@
   "license": "UNLICENSED",
   "type": "module",
   "scripts": {
-    "build": "esbuild pia.ts --bundle --platform=node --outfile=vpn/pia.js"
+    "build": "esbuild pia.ts --bundle --platform=node --outfile=vpn/pia.cjs"
   },
   "devDependencies": {
-    "@types/node": "^22.15.30",
+    "@types/node": "^24.0.7",
     "chalk": "^5.3.0",
     "esbuild": "^0.25.5",
     "p-limit": "^6.2.0"
+  },
+  "dependencies": {
+    "axios": "^1.10.0"
   }
 }

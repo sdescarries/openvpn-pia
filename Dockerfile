@@ -25,12 +25,12 @@ ENV \
 
 RUN true \
   && groupadd -r vpn \
-  && dnf install -y curl iproute iptables openvpn transmission-daemon tzdata unzip \
+  && dnf install -y curl iproute iptables openvpn pkill pgrep transmission-daemon tzdata unzip \
   && dnf clean all \
   && rm -rf /tmp/*
 
 RUN true \
-  && curl -fsSL https://rpm.nodesource.com/setup_22.x | bash \
+  && curl -fsSL https://rpm.nodesource.com/setup_24.x | bash \
   && dnf install -y nodejs \
   && dnf clean all \
   && rm -rf /tmp/*
@@ -41,9 +41,9 @@ ENV \
 
 COPY entrypoint.sh /
 COPY vpn /vpn
-COPY --from=build /build/vpn/pia.js /vpn/pia.js
+COPY --from=build /build/vpn/pia.cjs /vpn/pia.cjs
 RUN chmod -R go- /vpn
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 
-CMD [ "node", "/vpn/pia.js" ]
+CMD [ "node", "/vpn/pia.cjs" ]

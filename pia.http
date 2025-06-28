@@ -1,0 +1,13 @@
+### getServerList
+GET https://serverlist.piaservers.net/vpninfo/servers/v4
+
+### publicIp
+
+GET https://api.ipify.org?format=json
+
+### generateToken
+GET https://privateinternetaccess.com/gtoken/generateToken
+Authorization: Basic user:pass
+
+### getSignature
+curl -s --cacert /vpn/ca.rsa.4096.crt --connect-timeout 2 --connect-to montreal429::10.8.112.1: -G --data-urlencode token=token https://montreal429:19999/getSignature

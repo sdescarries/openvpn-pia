@@ -1,11 +1,13 @@
-import { spawn, ChildProcess } from 'child_process';
+import { ChildProcess, spawn } from 'child_process';
+
 import chalk from 'chalk';
 
 export interface ExecConfig {
   expectedStatusCode?: number;
-  onStdout?: (data: string) => void;
-  onStderr?: (data: string) => void;
+  onStdout?: (data?: string) => void;
+  onStderr?: (data?: string) => void;
   stdio?: 'pipe' | 'ignore';
+  abort?: boolean;
 }
 
 export interface ProcessStatus {
@@ -46,8 +48,8 @@ export class ExecPromise extends Promise<string> {
       this.stdout = [];
       this.stderr = [];
       return;
-    } 
-    
+    }
+
     const [cmd, ...args] = executor as string[];
     const context: any = {};
 
@@ -69,22 +71,28 @@ export class ExecPromise extends Promise<string> {
           this.stderr.join('')
         )
       );
+
+      if (config?.abort === true) {
+        process.exit(1);
+      }
     }
 
     const {
-      onStdout = (entry: string) => this.stdout.push(entry),
-      onStderr = (entry: string) => this.stdout.push(entry),
+      onStdout = (entry?: string) => entry == null ? undefined : this.stdout.push(entry),
+      onStderr = (entry?: string) => entry == null ? undefined : this.stderr.push(entry),
     } = config ?? {};
 
     this.stderr = [];
     this.stdout = [];
     this.cp = spawn(
       cmd, args, {
-        stdio: config?.stdio ?? 'pipe',
-      });
-    
+      stdio: config?.stdio ?? 'pipe',
+    });
+
     this.cp.stdout?.on('data', (buffer: Buffer) => onStdout(buffer.toString('utf8')));
     this.cp.stderr?.on('data', (buffer: Buffer) => onStderr(buffer.toString('utf8')));
+    this.cp.stdout?.on('end', () => onStdout());
+    this.cp.stderr?.on('end', () => onStderr());
 
     this.cp.on('close', onClose);
     this.cp.on('exit', onClose);

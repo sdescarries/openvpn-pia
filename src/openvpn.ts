@@ -9,7 +9,7 @@ export interface OpenVPN extends Server {
 
 export const openvpnLogger = (context: any, color: Function) => {
   const buffer: string[] = [];
-  return (line: string) => {
+  return (line?: string) => {
     const split: string[] = line?.split('\n') ?? [];
 
     const doPop = () => {
@@ -23,8 +23,8 @@ export const openvpnLogger = (context: any, color: Function) => {
       doPop();
       const output = buffer.join('');
       console.log(color(`\t${output}`));
-      if (/ip addr add dev pia/i.test(output)) {
-        context.resolve();
+      if (/Initialization Sequence Completed/i.test(output)) {
+        new Promise(resolve => setTimeout(resolve, 2000)).then(() => context.resolve());
       }
       buffer.splice(0, buffer.length);
     }
@@ -37,21 +37,21 @@ function launch({ cn, ip }: OpenVPN): [Promise<void>, ExecPromise] {
   console.log(`\nInitiate OpenVPN on ${chalk.blueBright.bold(cn)} [${chalk.gray(ip)}]\n`);
   const cmd = [
     '/usr/sbin/openvpn',
-    '--auth', 'sha1',
+    '--auth', 'sha256',
     '--auth-nocache',
     '--auth-user-pass', "/vpn/credentials.txt",
     '--ca', "/vpn/ca.rsa.2048.crt",
+    '--cipher', 'AES-256-GCM',
     '--client',
     '--comp-lzo', 'no',
     '--crl-verify', '/vpn/crl.rsa.2048.pem',
     '--dev', 'pia',
     '--dev-type', 'tun',
-    '--disable-occ',
-    '--mute-replay-warnings',
-    '--persist-key',
-    '--persist-tun',
+    '--down', '/vpn/killswitch.sh',
+    '--down-pre',
+    '--mtu-test',
     '--ping', '10',
-    '--ping-restart', '3600',
+    '--ping-exit', '60',
     '--ping-timer-rem',
     '--proto', 'udp',
     '--pull-filter', 'ignore', 'ifconfig-ipv6',
@@ -71,9 +71,10 @@ function launch({ cn, ip }: OpenVPN): [Promise<void>, ExecPromise] {
   context.process = exec(cmd, {
     onStdout: openvpnLogger(context, chalk.blue),
     onStderr: openvpnLogger(context, chalk.yellow),
+    abort: true,
   });
 
-  setTimeout(context.resolve, 60000);
+  setTimeout(context.resolve, 20000);
 
   return [
     context.ready,
@@ -81,13 +82,5 @@ function launch({ cn, ip }: OpenVPN): [Promise<void>, ExecPromise] {
   ];
 }
 
-function skip({ pid }: OpenVPN): [Promise<void>, ExecPromise] {
-  console.log(`\nOpenVPN already running with PID ${chalk.blueBright.bold(pid)}\n`);
-  return [
-    Promise.resolve(),
-    new ExecPromise((resolve: Function) => resolve('')),
-  ];
-}
-
 export const openvpn = (server: OpenVPN): [Promise<void>, ExecPromise] =>
-  (server.pid ? skip(server) : launch(server));
+  launch(server);
