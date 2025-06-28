@@ -18,7 +18,7 @@ const transConfig = (config: any) => ({
   'bind-address-ipv4': config.local,
   'bind-address-ipv6': '::',
   'blocklist-enabled': true,
-  'blocklist-url': 'http://john.bitsurge.net/public/biglist.p2p.gz',
+  'blocklist-url': 'https://raw.githubusercontent.com/Naunter/BT_BlockLists/master/bt_blocklists.gz',
   'cache-size-mb': 64,
   'default-trackers': '',
   'dht-enabled': true,
